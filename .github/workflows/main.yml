@@ -1,0 +1,28 @@
+name: Docker Image
+
+on: [push]
+
+env:
+  IMAGE_NAME: my-image
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+
+  run-service:
+    needs: build-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Start Docker container
+        run: docker run -d -p 3000:3000 $IMAGE_NAME
+
+      - name: Check running containers
+        run: docker ps
